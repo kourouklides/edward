@@ -116,3 +116,72 @@ class Inference(object):
         else:
           # If key is a placeholder, then don't modify its fed value.
           self.data[key] = value
+
+  def run(self, *args, **kwargs):
+    """A simple wrapper to run inference.
+
+    1. Initialize via ``initialize``.
+    2. Run ``update`` for ``self.n_iter`` iterations.
+    3. While running, ``print_progress``.
+    4. Finalize via ``finalize``.
+
+    Parameters
+    ----------
+    *args
+      Passed into ``initialize``.
+    **kwargs
+      Passed into ``initialize``.
+    """
+    self.initialize(*args, **kwargs)
+    for t in range(self.n_iter + 1):
+      info_dict = self.update()
+      self.print_progress(t, info_dict)
+
+    self.finalize()
+
+  def initialize(self, n_iter=1000, n_print=100, logdir=None):
+    """Initialize inference algorithm.
+
+    Parameters
+    ----------
+    n_iter : int, optional
+      Number of iterations for algorithm.
+    n_print : int, optional
+      Number of iterations for each print progress. To suppress print
+      progress, then specify None.
+    logdir : str, optional
+      Directory where event file will be written. For details,
+      see `tf.train.SummaryWriter`. Default is to write nothing.
+    """
+    self.n_iter = n_iter
+    self.n_print = n_print
+
+    if logdir is not None:
+      train_writer = tf.train.SummaryWriter(logdir, tf.get_default_graph())
+
+  def update(self):
+    """Run one iteration of inference.
+
+    Returns
+    -------
+    dict
+      Dictionary of algorithm-specific information.
+    """
+    return {}
+
+  def print_progress(self, t, info_dict):
+    """Print progress to output.
+
+    Parameters
+    ----------
+    t : int
+      Iteration counter.
+    info_dict : dict
+      Dictionary of algorithm-specific information.
+    """
+    pass
+
+  def finalize(self):
+    """Function to call after convergence.
+    """
+    pass
